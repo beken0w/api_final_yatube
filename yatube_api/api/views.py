@@ -12,12 +12,24 @@ from api.serializers import (PostSerializer,
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
+    """Описание работы представления GroupViewSet.
+    GET - api/v1/groups/ - вернет список групп,
+    GET - api/v1/groups/{group_id}/- вернет информацию о сообществе по group_id
+    """
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
 class PostViewSet(viewsets.ModelViewSet):
+    """Описание работы представления PostViewSet.
+    GET - api/v1/posts/ - вернет список постов,
+    GET - api/v1/posts/{post_id}/ - вернет информацию о посте по post_id,
+    POST - api/v1/posts/ - создаст пост на основе переданной информации,
+    PUT - api/v1/posts/{post_id}/ - заменит пост с указанным post_id,
+    PATCH - api/v1/posts/{post_id}/ - обновит информацию поста по post_id,
+    DELETE - api/v1/posts/{post_id}/ - удалит пост по post_id
+    """
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = (IsAuthorOrReadOnly,)
@@ -28,6 +40,14 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    """Описание работы представления CommentViewSet.
+    GET - api/v1/posts/{post_id}/comments - вернет список комментов поста,
+    GET - api/v1/posts/{post_id}/comments/{comment_id}/ - вернет коммент,
+    POST - api/v1/posts/{post_id}/comments - создаст комментарий для поста,
+    PUT - api/v1/posts/{post_id}/comments/{comment_id}/ - заменит коммент,
+    PATCH - api/v1/posts/{post_id}/comments/{comment_id}/ - обновит коммент,
+    DELETE - api/v1/posts/{post_id}/comments/{comment_id}/ - удалит коммент
+    """
     serializer_class = CommentSerializer
     permission_classes = (IsAuthorOrReadOnly,)
 
@@ -42,6 +62,10 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class FollowViewSet(viewsets.ModelViewSet):
+    """Описание работы представления FollowViewSet.
+    GET - api/v1/follow/ - вернет список подписок,
+    POST - api/v1/follow/ - подпишет текущего пользователя на автора
+    """
     serializer_class = FollowSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('user__username', 'following__username')
