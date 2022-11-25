@@ -9,6 +9,12 @@ from api.serializers import (PostSerializer,
                              CommentSerializer,
                              FollowSerializer,
                              GroupSerializer)
+from rest_framework import mixins
+
+
+class FollowCreateListViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
+                              viewsets.GenericViewSet):
+    pass
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
@@ -53,15 +59,14 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         post = get_object_or_404(Post, pk=self.kwargs.get('post_id'))
-        comments = post.comments.all()
-        return comments
+        return post.comments.all()
 
     def perform_create(self, serializer):
         post = get_object_or_404(Post, pk=self.kwargs.get('post_id'))
         serializer.save(author=self.request.user, post=post)
 
 
-class FollowViewSet(viewsets.ModelViewSet):
+class FollowViewSet(FollowCreateListViewSet):
     """Описание работы представления FollowViewSet.
     GET - api/v1/follow/ - вернет список подписок,
     POST - api/v1/follow/ - подпишет текущего пользователя на автора
@@ -71,7 +76,7 @@ class FollowViewSet(viewsets.ModelViewSet):
     search_fields = ('user__username', 'following__username')
 
     def get_queryset(self):
-        following = Follow.objects.filter(user=self.request.user)
+        following = Follow.objects.filter(user__username=self.request.user)
         return following
 
     def perform_create(self, serializer):
